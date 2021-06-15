@@ -5,7 +5,7 @@ sidus:
         submit:
             label: Filtrer
         results:
-            label: '%first%-%last% de %count%'
+            label: 'Affichage de %length% sur %count% résultats'
         boolean:
             yes: Oui
             no: Non

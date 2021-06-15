@@ -101,6 +101,14 @@
                         </td>
                     {% endfor %}
                 </tr>
+            {% else %}
+                <tr>
+                    <td colspan="{{ datagrid.columns|length }}">
+                        <div class="alert alert-secondary text-center m-4" role="alert">
+                            <span class="text-secondary">No result</span>
+                        </div>
+                    </td>
+                </tr>
             {% endfor %}
             </tbody>
         {% endblock %}

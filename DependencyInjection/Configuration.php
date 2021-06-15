@@ -1,12 +1,15 @@
 <?php
+/** @noinspection NullPointerExceptionInspection */
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2021 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Sidus\DataGridBundle\DependencyInjection;
 
@@ -53,8 +56,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root($this->root);
+        $treeBuilder = new TreeBuilder('sidus_data_grid');
+        $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children()
             ->scalarNode('default_form_theme')->defaultNull()->end()
@@ -83,8 +86,8 @@ class Configuration implements ConfigurationInterface
      */
     protected function getDataGridConfigTreeBuilder(): NodeDefinition
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('configurations');
+        $builder = new TreeBuilder('configurations');
+        $node = $builder->getRootNode();
         $dataGridDefinition = $node
             ->useAttributeAsKey('code')
             ->prototype('array')

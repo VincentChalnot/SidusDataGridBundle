@@ -2,16 +2,20 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2021 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Sidus\DataGridBundle\Twig;
 
 use Sidus\DataGridBundle\Model\DataGrid;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -29,17 +33,22 @@ class RendererExtension extends AbstractExtension
     /** @var Environment */
     protected $twig;
 
-    /**
-     * @param Environment $twig
-     */
-    public function __construct(Environment $twig)
-    {
+    /** @var UrlGeneratorInterface */
+    protected $urlGenerator;
+
+    /** @var RequestStack */
+    protected $requestStack;
+
+    public function __construct(
+        Environment $twig,
+        UrlGeneratorInterface $urlGenerator,
+        RequestStack $requestStack
+    ) {
         $this->twig = $twig;
+        $this->urlGenerator = $urlGenerator;
+        $this->requestStack = $requestStack;
     }
 
-    /**
-     * @return array
-     */
     public function getFunctions(): array
     {
         return [
@@ -53,7 +62,23 @@ class RendererExtension extends AbstractExtension
                 [$this, 'getFilterColumns'],
                 ['is_safe' => ['html']]
             ),
+            new TwigFunction(
+                'page_path',
+                [$this, 'getPagePath']
+            ),
         ];
+    }
+
+    public function getPagePath(int $page): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request) {
+            return "?page={$page}";
+        }
+        $parameters = $request->query->all();
+        $parameters['page'] = $page;
+
+        return $this->urlGenerator->generate($request->attributes->get('_route'), $parameters);
     }
 
     /**

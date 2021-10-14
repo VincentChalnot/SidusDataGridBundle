@@ -75,7 +75,7 @@ class RendererExtension extends AbstractExtension
         if (!$request) {
             return "?page={$page}";
         }
-        $parameters = $request->query->all();
+        $parameters = array_merge($request->attributes->get('_route_params'), $request->query->all());
         $parameters['page'] = $page;
 
         return $this->urlGenerator->generate($request->attributes->get('_route'), $parameters);

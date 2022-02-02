@@ -1,0 +1,20 @@
+<thead>
+<tr>
+    {% for column in datagrid.columns %}
+        <th>
+            {% set sortButton %}
+                {% for index, columnName in datagrid.queryHandler.configuration.sortable %}
+                    {% if column.sortColumn == columnName %}
+                        {{ form_widget(sort[index], {label: column.renderLabel}) }}
+                    {% endif %}
+                {% endfor %}
+            {% endset %}
+            {% if sortButton|trim %}
+                {{ sortButton|raw }}
+            {% else %}
+                {{ column.renderLabel }}
+            {% endif %}
+        </th>
+    {% endfor %}
+</tr>
+</thead>

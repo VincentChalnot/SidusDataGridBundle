@@ -32,7 +32,7 @@
         "symfony/property-access": ">=3.0",
         "symfony/http-foundation": ">=3.0",
         "symfony/translation": ">=3.0",
-        "sidus/filter-bundle": "3.1.*|dev-v3.1-dev",
+        "sidus/filter-bundle": ">=3.1|dev-v3.1-dev|dev-v4.0-dev",
         "sidus/base-bundle": "~1.0"
     }
 }

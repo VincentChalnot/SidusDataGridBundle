@@ -39,10 +39,7 @@ class Configuration implements ConfigurationInterface
     /** @var Closure */
     protected $serviceResolver;
 
-    /**
-     * @param string $root
-     */
-    public function __construct($root = 'sidus_data_grid')
+    public function __construct(string $root = 'sidus_data_grid')
     {
         $this->root = $root;
         $this->serviceResolver = static function ($reference) {
@@ -79,11 +76,6 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    /**
-     * @throws RuntimeException
-     *
-     * @return NodeDefinition
-     */
     protected function getDataGridConfigTreeBuilder(): NodeDefinition
     {
         $builder = new TreeBuilder('configurations');
@@ -104,9 +96,6 @@ class Configuration implements ConfigurationInterface
         return $node;
     }
 
-    /**
-     * @param NodeBuilder $dataGridDefinition
-     */
     protected function appendDataGridDefinition(NodeBuilder $dataGridDefinition): void
     {
         $columnDefinition = $dataGridDefinition
@@ -125,6 +114,9 @@ class Configuration implements ConfigurationInterface
             ->variableNode('actions')->end()
             ->variableNode('submit_button')->end()
             ->variableNode('reset_button')->end()
+            ->arrayNode('attributes')
+            ->prototype('scalar')->end()
+            ->end()
             ->arrayNode('columns')
             ->prototype('array')
             ->children();
@@ -137,9 +129,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param NodeBuilder $columnDefinition
-     */
     protected function appendColumnDefinition(NodeBuilder $columnDefinition): void
     {
         $columnDefinition
@@ -154,6 +143,9 @@ class Configuration implements ConfigurationInterface
             ->variableNode('value_renderer')
             ->beforeNormalization()->always($this->serviceResolver)->end()
             ->end()
-            ->variableNode('formatting_options')->end();
+            ->variableNode('formatting_options')->end()
+            ->arrayNode('attributes')
+            ->prototype('scalar')->end()
+            ->end();
     }
 }

@@ -51,7 +51,7 @@
         </div>
         <div class="p-2">
             {% block pagination %}
-                {{ pagerfanta(pager, 'twitter_bootstrap4', {css_container_class: 'pagination m-0'}) }}
+                {% include '@SidusDataGrid/Pager/pager.html.twig' %}
             {% endblock %}
         </div>
         <div class="p-2">
@@ -71,7 +71,7 @@
 
 {% block datagrid_table %}
     {% set sort = datagrid.formView.sortable %}
-    <table class="table">
+    <table{{ attributes(datagrid.attributes, {class: 'table'}) }}>
         {% block datagrid_table_headers %}
             {% include '@SidusDataGrid/partials/table_headers.html.twig' %}
         {% endblock %}
@@ -80,7 +80,7 @@
             {% for result in pager %}
                 <tr class="datagrid-row"{% if result.id is defined %} data-entity-id="{{ result.id }}"{% endif %}>
                     {% for column in datagrid.columns %}
-                        <td>
+                        <td{{ attributes(column.attributes) }}>
                             {% if column.template %}
                                 {% include column.template with column.templateVars %}
                             {% else %}

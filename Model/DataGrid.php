@@ -35,6 +35,8 @@ use UnexpectedValueException;
  */
 class DataGrid
 {
+    use AttributesTrait;
+
     /** @var string */
     protected $code;
 
@@ -77,10 +79,6 @@ class DataGrid
     /** @var array */
     protected $resetButton = [];
 
-    /**
-     * @param string $code
-     * @param array  $configuration
-     */
     public function __construct(string $code, array $configuration)
     {
         $this->code = $code;
@@ -98,105 +96,66 @@ class DataGrid
         }
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @return QueryHandlerInterface
-     */
     public function getQueryHandler(): QueryHandlerInterface
     {
         return $this->queryHandler;
     }
 
-    /**
-     * @param QueryHandlerInterface $queryHandler
-     */
     public function setQueryHandler(QueryHandlerInterface $queryHandler): void
     {
         $this->queryHandler = $queryHandler;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFormTheme(): ?string
     {
         return $this->formTheme;
     }
 
-    /**
-     * @param string $formTheme
-     */
     public function setFormTheme(string $formTheme = null): void
     {
         $this->formTheme = $formTheme;
     }
 
-    /**
-     * @return string
-     */
     public function getTemplate(): string
     {
         return $this->template;
     }
 
-    /**
-     * @param string $template
-     */
     public function setTemplate(string $template): void
     {
         $this->template = $template;
     }
 
-    /**
-     * @return array
-     */
     public function getTemplateVars(): array
     {
         return $this->templateVars;
     }
 
-    /**
-     * @param array $templateVars
-     */
     public function setTemplateVars(array $templateVars): void
     {
         $this->templateVars = $templateVars;
     }
 
-    /**
-     * @return ColumnValueRendererInterface
-     */
     public function getColumnValueRenderer(): ColumnValueRendererInterface
     {
         return $this->columnValueRenderer;
     }
 
-    /**
-     * @param ColumnValueRendererInterface $columnValueRenderer
-     */
     public function setColumnValueRenderer(ColumnValueRendererInterface $columnValueRenderer): void
     {
         $this->columnValueRenderer = $columnValueRenderer;
     }
 
-    /**
-     * @return ColumnLabelRendererInterface
-     */
     public function getColumnLabelRenderer(): ColumnLabelRendererInterface
     {
         return $this->columnLabelRenderer;
     }
 
-    /**
-     * @param ColumnLabelRendererInterface $columnLabelRenderer
-     */
     public function setColumnLabelRenderer(ColumnLabelRendererInterface $columnLabelRenderer): void
     {
         $this->columnLabelRenderer = $columnLabelRenderer;
@@ -210,10 +169,6 @@ class DataGrid
         return $this->columns;
     }
 
-    /**
-     * @param Column $column
-     * @param int    $index
-     */
     public function addColumn(Column $column, int $index = null): void
     {
         if (null === $index) {
@@ -231,22 +186,12 @@ class DataGrid
         $this->columns = $columns;
     }
 
-    /**
-     * @return array
-     */
     public function getActions(): array
     {
         return $this->actions;
     }
 
-    /**
-     * @param string $action
-     *
-     * @throws UnexpectedValueException
-     *
-     * @return array
-     */
-    public function getAction($action): array
+    public function getAction(string $action): array
     {
         if (!$this->hasAction($action)) {
             throw new UnexpectedValueException("No action with code: '{$action}'");
@@ -255,70 +200,41 @@ class DataGrid
         return $this->actions[$action];
     }
 
-    /**
-     * @param string $action
-     *
-     * @return bool
-     */
     public function hasAction(string $action): bool
     {
         return array_key_exists($action, $this->actions);
     }
 
-    /**
-     * @param string $action
-     * @param array  $configuration
-     */
     public function setAction(string $action, array $configuration): void
     {
         $this->actions[$action] = $configuration;
     }
 
-    /**
-     * @param array $actions
-     */
     public function setActions(array $actions): void
     {
         $this->actions = $actions;
     }
 
-    /**
-     * @return array
-     */
     public function getSubmitButton(): array
     {
         return $this->submitButton;
     }
 
-    /**
-     * @param array $submitButton
-     */
     public function setSubmitButton(array $submitButton): void
     {
         $this->submitButton = $submitButton;
     }
 
-    /**
-     * @return array
-     */
     public function getResetButton(): array
     {
         return $this->resetButton;
     }
 
-    /**
-     * @param array $resetButton
-     */
     public function setResetButton(array $resetButton): void
     {
         $this->resetButton = $resetButton;
     }
 
-    /**
-     * @throws LogicException
-     *
-     * @return FormInterface
-     */
     public function getForm(): FormInterface
     {
         if (!$this->form) {
@@ -328,27 +244,16 @@ class DataGrid
         return $this->form;
     }
 
-    /**
-     * @return array
-     */
     public function getFormOptions(): array
     {
         return $this->formOptions;
     }
 
-    /**
-     * @param array $formOptions
-     */
     public function setFormOptions(array $formOptions): void
     {
         $this->formOptions = $formOptions;
     }
 
-    /**
-     * @throws LogicException
-     *
-     * @return FormView
-     */
     public function getFormView(): FormView
     {
         if (!$this->formView) {
@@ -358,11 +263,6 @@ class DataGrid
         return $this->formView;
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     *
-     * @return FormInterface
-     */
     public function buildForm(FormBuilderInterface $builder): FormInterface
     {
         $this->buildFilterActions($builder);
@@ -373,25 +273,17 @@ class DataGrid
         return $this->form;
     }
 
-    /**
-     * @param Request $request
-     */
     public function handleRequest(Request $request): void
     {
         $this->queryHandler->handleRequest($request);
     }
 
-    /**
-     * @param array $data
-     */
     public function handleArray(array $data): void
     {
         $this->queryHandler->handleArray($data);
     }
 
     /**
-     * @throws InvalidArgumentException
-     *
      * @return array|Traversable
      */
     public function getPager()
@@ -399,13 +291,7 @@ class DataGrid
         return $this->getQueryHandler()->getPager();
     }
 
-    /**
-     * @param string $action
-     * @param array  $parameters
-     *
-     * @throws UnexpectedValueException
-     */
-    public function setActionParameters($action, array $parameters): void
+    public function setActionParameters(string $action, array $parameters): void
     {
         if ('submit_button' === $action) {
             $this->setSubmitButton(
@@ -442,9 +328,6 @@ class DataGrid
         );
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     */
     protected function buildFilterActions(FormBuilderInterface $builder): void
     {
         $visibleFilterCount = 0;

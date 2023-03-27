@@ -1,7 +1,7 @@
 <thead>
 <tr>
     {% for column in datagrid.columns %}
-        <th>
+        <th{{ attributes(column.attributes) }}>
             {% set sortButton %}
                 {% for index, columnName in datagrid.queryHandler.configuration.sortable %}
                     {% if column.sortColumn == columnName %}

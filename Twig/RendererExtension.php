@@ -66,6 +66,11 @@ class RendererExtension extends AbstractExtension
                 'page_path',
                 [$this, 'getPagePath']
             ),
+            new TwigFunction(
+                'attributes',
+                [$this, 'renderAttributes'],
+                ['is_safe' => ['html']]
+            ),
         ];
     }
 
@@ -117,5 +122,16 @@ class RendererExtension extends AbstractExtension
         }
 
         return $columns;
+    }
+
+    public function renderAttributes(array $attributes = [], array $defaults = []): string
+    {
+        $render = '';
+        foreach (array_merge($defaults, $attributes) as $key => $value) {
+            $value = htmlspecialchars($value);
+            $render .= " {$key}=\"{$value}\"";
+        }
+
+        return $render;
     }
 }

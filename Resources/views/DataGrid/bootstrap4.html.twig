@@ -1,106 +1,113 @@
 {# @var datagrid \Sidus\DataGridBundle\Model\DataGrid #}
-{# @var pager \Pagerfanta\Pagerfanta #}
-{% set pager = datagrid.queryHandler.pager %}
+{% block datagrid %}
+    {# @var pager \Pagerfanta\Pagerfanta #}
+    {% set pager = datagrid.queryHandler.pager %}
+    {% set form = datagrid.formView %}
 
-{% set form = datagrid.formView %}
-{% if datagrid.formTheme %}
-    {% form_theme form datagrid.formTheme %}
-{% endif %}
-{{ form_start(form) }}
+    {% block form_start %}
+        {% if datagrid.formTheme %}
+            {% form_theme form datagrid.formTheme %}
+        {% endif %}
+        {{ form_start(form) }}
+    {% endblock %}
 
-{% block filters %}
-    {% if form.filters|length > 0 %}
-        {% set num_columns = num_columns|default(3) %}
-        <div class="row">
-            {% for column in get_filter_columns(form.filters, num_columns) %}
-                <div class="col-md-{{ 12 // num_columns }}">
-                    {% for cell in column %}
-                        {{ form_row(cell) }}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endblock %}
+    {% block filters %}
+        {% if form.filters|length > 0 %}
+            {% set num_columns = num_columns|default(3) %}
+            <div class="row">
+                {% for column in get_filter_columns(form.filters, num_columns) %}
+                    <div class="col-md-{{ 12 // num_columns }}">
+                        {% for cell in column %}
+                            {{ form_row(cell) }}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endblock %}
 
-{% block action_menu %}
-    <div class="d-flex justify-content-between mb-3 sticky-top bg-white">
-        <div class="p-2">
-            {% block datagrid_actions %}
-                <div class="btn-group">
-                    <div class="btn-toolbar" role="toolbar">
-                        <div class="btn-group mr-2" role="group">
-                            {% block datagrid_count %}
-                                <span class="input-group-text bg-white">
+    {% block action_menu %}
+        <div class="d-flex justify-content-between mb-3 sticky-top bg-white">
+            <div class="p-2">
+                {% block datagrid_actions %}
+                    <div class="btn-group">
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group mr-2" role="group">
+                                {% block datagrid_count %}
+                                    <span class="input-group-text bg-white">
                                     {{ 'sidus.datagrid.results.label'|trans({
                                         '%first%': pager.currentPageOffsetStart,
                                         '%last%': pager.currentPageOffsetEnd,
                                         '%count%': pager.count,
                                     }) }}
                                 </span>
-                            {% endblock %}
-                        </div>
-                        <div class="btn-group" role="group">
-                            {% for action in datagrid.formView.actions %}
-                                {{ form_widget(action) }}
-                            {% endfor %}
+                                {% endblock %}
+                            </div>
+                            <div class="btn-group" role="group">
+                                {% for action in datagrid.formView.actions %}
+                                    {{ form_widget(action) }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endblock %}
+                {% endblock %}
+            </div>
+            <div class="p-2">
+                {% block pagination %}
+                    {% include '@SidusDataGrid/Pager/pager.html.twig' %}
+                {% endblock %}
+            </div>
+            <div class="p-2">
+                {% block filters_actions %}
+                    <div class="btn-group">
+                        {% if datagrid.formView.filterResetButton is defined %}
+                            {{ form_widget(datagrid.formView.filterResetButton) }}
+                        {% endif %}
+                        {% if datagrid.formView.filterSubmitButton is defined %}
+                            {{ form_widget(datagrid.formView.filterSubmitButton) }}
+                        {% endif %}
+                    </div>
+                {% endblock %}
+            </div>
         </div>
-        <div class="p-2">
-            {% block pagination %}
-                {% include '@SidusDataGrid/Pager/pager.html.twig' %}
-            {% endblock %}
-        </div>
-        <div class="p-2">
-            {% block filters_actions %}
-                <div class="btn-group">
-                    {% if datagrid.formView.filterResetButton is defined %}
-                        {{ form_widget(datagrid.formView.filterResetButton) }}
-                    {% endif %}
-                    {% if datagrid.formView.filterSubmitButton is defined %}
-                        {{ form_widget(datagrid.formView.filterSubmitButton) }}
-                    {% endif %}
-                </div>
-            {% endblock %}
-        </div>
-    </div>
-{% endblock %}
+    {% endblock %}
 
-{% block datagrid_table %}
-    {% set sort = datagrid.formView.sortable %}
-    <table{{ attributes(datagrid.attributes, {class: 'table'}) }}>
-        {% block datagrid_table_headers %}
-            {% include '@SidusDataGrid/partials/table_headers.html.twig' %}
-        {% endblock %}
-        {% block datagrid_table_body %}
-            <tbody>
-            {% for result in pager %}
-                <tr class="datagrid-row"{% if result.id is defined %} data-entity-id="{{ result.id }}"{% endif %}>
-                    {% for column in datagrid.columns %}
-                        <td{{ attributes(column.attributes) }}>
-                            {% if column.template %}
-                                {% include column.template with column.templateVars %}
-                            {% else %}
-                                {{ column.renderValue(result) }}
-                            {% endif %}
+    {% block datagrid_table %}
+        {% set sort = datagrid.formView.sortable %}
+        <table{{ attributes(datagrid.attributes, {class: 'table'}) }}>
+            {% block datagrid_table_headers %}
+                {% include '@SidusDataGrid/partials/table_headers.html.twig' %}
+            {% endblock %}
+            {% block datagrid_table_body %}
+                <tbody>
+                {% for result in pager %}
+                    <tr class="datagrid-row"{% if result.id is defined %} data-entity-id="{{ result.id }}"{% endif %}>
+                        {% for column in datagrid.columns %}
+                            <td{{ attributes(column.attributes) }}>
+                                {% if column.template %}
+                                    {% include column.template with column.templateVars %}
+                                {% else %}
+                                    {{ column.renderValue(result) }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="{{ datagrid.columns|length }}">
+                            <div class="alert alert-secondary text-center m-4" role="alert">
+                                <span class="text-secondary">No result</span>
+                            </div>
                         </td>
-                    {% endfor %}
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="{{ datagrid.columns|length }}">
-                        <div class="alert alert-secondary text-center m-4" role="alert">
-                            <span class="text-secondary">No result</span>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        {% endblock %}
-    </table>
-{% endblock %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            {% endblock %}
+        </table>
+    {% endblock %}
 
-{{ form_end(form) }}
+    {% block form_end %}
+        {{ form_end(form) }}
+    {% endblock %}
+
+{% endblock %}

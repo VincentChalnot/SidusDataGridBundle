@@ -12,7 +12,7 @@
             {% if sortButton|trim %}
                 {{ sortButton|raw }}
             {% else %}
-                {{ column.renderLabel }}
+                {{ column.renderLabel|raw }}
             {% endif %}
         </th>
     {% endfor %}

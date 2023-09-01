@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Sidus\DataGridBundle\:
+        resource: '../../'
+        exclude: '../../{DependencyInjection,Documentation,Model}'
+
+    Sidus\DataGridBundle\Renderer\ColumnValueRendererInterface:
+        alias: Sidus\DataGridBundle\Renderer\DefaultColumnValueRenderer
+
+    Sidus\DataGridBundle\Renderer\ColumnLabelRendererInterface:
+        alias: Sidus\DataGridBundle\Renderer\DefaultColumnLabelRenderer

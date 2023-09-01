@@ -5,7 +5,7 @@
 Require this bundle with composer:
 
 ````bash
-$ composer require sidus/datagrid-bundle "1.4.*"
+$ composer require sidus/datagrid-bundle
 ````
 
 ### Add the bundle to AppKernel.php
@@ -21,12 +21,6 @@ class AppKernel
     {
         $bundles = [
             // ...
-
-            // Required
-            new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
-            
-            // Optional, see the benefits of this bundle here: https://github.com/VincentChalnot/SidusBaseBundle
-            new Sidus\BaseBundle\SidusBaseBundle(),
             
             // Required
             new Sidus\FilterBundle\SidusFilterBundle(),

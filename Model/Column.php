@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -24,37 +24,17 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class Column
 {
-    use AttributesTrait;
+    use CommonTrait;
 
-    /** @var string */
-    protected $code;
+    protected DataGrid $dataGrid;
 
-    /** @var DataGrid */
-    protected $dataGrid;
+    protected ?string $sortColumn = null;
 
-    /** @var string */
-    protected $template;
+    protected ?string $propertyPath = null;
 
-    /** @var array */
-    protected $templateVars = [];
+    protected array $formattingOptions = [];
 
-    /** @var string */
-    protected $sortColumn;
-
-    /** @var string */
-    protected $propertyPath;
-
-    /** @var ColumnValueRendererInterface */
-    protected $valueRenderer;
-
-    /** @var ColumnLabelRendererInterface */
-    protected $labelRenderer;
-
-    /** @var array */
-    protected $formattingOptions = [];
-
-    /** @var string */
-    protected $label;
+    protected ?string $label = null;
 
     public function __construct(string $code, DataGrid $dataGrid, array $options = [])
     {
@@ -66,40 +46,11 @@ class Column
         }
     }
 
-    public function getCode(): string
-    {
-        return $this->code;
-    }
-
-    public function setCode(string $code): void
-    {
-        $this->code = $code;
-    }
-
     public function getDataGrid(): DataGrid
     {
         return $this->dataGrid;
     }
 
-    public function getTemplate(): ?string
-    {
-        return $this->template;
-    }
-
-    public function setTemplate(string $template): void
-    {
-        $this->template = $template;
-    }
-
-    public function getTemplateVars(): array
-    {
-        return $this->templateVars;
-    }
-
-    public function setTemplateVars(array $templateVars): void
-    {
-        $this->templateVars = $templateVars;
-    }
 
     public function getSortColumn(): string
     {
@@ -129,34 +80,6 @@ class Column
         $this->propertyPath = $propertyPath;
     }
 
-    public function getValueRenderer(): ColumnValueRendererInterface
-    {
-        if (!$this->valueRenderer) {
-            return $this->getDataGrid()->getColumnValueRenderer();
-        }
-
-        return $this->valueRenderer;
-    }
-
-    public function setValueRenderer(ColumnValueRendererInterface $valueRenderer): void
-    {
-        $this->valueRenderer = $valueRenderer;
-    }
-
-    public function getLabelRenderer(): ColumnLabelRendererInterface
-    {
-        if (null === $this->labelRenderer) {
-            return $this->getDataGrid()->getColumnLabelRenderer();
-        }
-
-        return $this->labelRenderer;
-    }
-
-    public function setLabelRenderer(ColumnLabelRendererInterface $labelRenderer): void
-    {
-        $this->labelRenderer = $labelRenderer;
-    }
-
     public function getFormattingOptions(): array
     {
         return $this->formattingOptions;
@@ -179,35 +102,24 @@ class Column
 
     /**
      * Get column value for a given object
-     *
-     * @param mixed $object
-     *
-     * @return mixed
      */
-    public function getValue($object)
+    public function getValue(object $object): mixed
     {
-        $accessor = PropertyAccess::createPropertyAccessor();
-
-        return $accessor->getValue($object, $this->getPropertyPath());
+        return PropertyAccess::createPropertyAccessor()->getValue($object, $this->getPropertyPath());
     }
 
     /**
      * Render column for a given result
-     *
-     * @param mixed $object
-     * @param array $options
-     *
-     * @return string
      */
-    public function renderValue($object, array $options = []): string
+    public function renderValue(object $object, array $options = []): string
     {
         try {
             $value = $this->getValue($object);
-        } catch (UnexpectedTypeException $e) {
+        } catch (UnexpectedTypeException) {
             return '';
         }
 
-        return $this->getValueRenderer()->renderValue(
+        return $this->getColumnValueRenderer()->renderValue(
             $value,
             array_merge(
                 ['column' => $this, 'object' => $object],
@@ -219,6 +131,6 @@ class Column
 
     public function renderLabel(): string
     {
-        return ucfirst($this->getLabelRenderer()->renderColumnLabel($this));
+        return ucfirst($this->getColumnLabelRenderer()->renderColumnLabel($this));
     }
 }

@@ -1,5 +1,0 @@
-services:
-    Sidus\DataGridBundle\Form\Type\LinkType:
-        public: false
-        tags:
-            - { name: form.type }

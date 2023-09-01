@@ -1,6 +1,0 @@
-services:
-    Sidus\DataGridBundle\Twig\RendererExtension:
-        public: false
-        autowire: true
-        tags:
-            - { name: twig.extension }

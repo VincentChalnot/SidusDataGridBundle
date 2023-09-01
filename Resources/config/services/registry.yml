@@ -1,3 +1,0 @@
-services:
-    Sidus\DataGridBundle\Registry\DataGridRegistry:
-        autowire: true

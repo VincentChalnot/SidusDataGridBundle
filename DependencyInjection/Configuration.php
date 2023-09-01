@@ -3,7 +3,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -33,24 +33,16 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class Configuration implements ConfigurationInterface
 {
-    /** @var string */
-    protected $root;
+    protected Closure $serviceResolver;
 
-    /** @var Closure */
-    protected $serviceResolver;
-
-    public function __construct(string $root = 'sidus_data_grid')
+    public function __construct(
+        protected string $root = 'sidus_data_grid')
     {
-        $this->root = $root;
         $this->serviceResolver = static function ($reference) {
             return new Reference(ltrim($reference, '@'));
         };
     }
 
-    /**
-     * {@inheritdoc}
-     * @throws RuntimeException
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('sidus_data_grid');

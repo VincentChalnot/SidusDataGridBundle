@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,11 +12,13 @@ declare(strict_types=1);
 
 namespace Sidus\DataGridBundle\DependencyInjection;
 
-use Sidus\BaseBundle\DependencyInjection\SidusBaseExtension;
 use Sidus\DataGridBundle\Registry\DataGridRegistry;
 use Sidus\FilterBundle\DependencyInjection\Configuration as FilterConfiguration;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use UnexpectedValueException;
 use function is_array;
@@ -28,17 +30,14 @@ use function is_array;
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
  */
-class SidusDataGridExtension extends SidusBaseExtension
+class SidusDataGridExtension extends Extension
 {
-    /** @var array */
-    protected $globalConfiguration;
+    protected array $globalConfiguration;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        parent::load($configs, $container);
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
 
         $configuration = $this->createConfigurationParser();
         $this->globalConfiguration = $this->processConfiguration($configuration, $configs);
@@ -52,11 +51,6 @@ class SidusDataGridExtension extends SidusBaseExtension
 
     /**
      * Handle configuration parsing logic not handled by the semantic configuration definition
-     *
-     * @param string $code
-     * @param array  $dataGridConfiguration
-     *
-     * @return array
      */
     protected function finalizeConfiguration(
         string $code,
@@ -108,12 +102,6 @@ class SidusDataGridExtension extends SidusBaseExtension
         return $dataGridConfiguration;
     }
 
-    /**
-     * @param string $code
-     * @param array  $queryHandlerConfig
-     *
-     * @return array
-     */
     protected function finalizeFilterConfiguration(string $code, array $queryHandlerConfig): array
     {
         // Parse configuration using Configuration parser from FilterBundle
@@ -134,8 +122,6 @@ class SidusDataGridExtension extends SidusBaseExtension
 
     /**
      * Allows the configuration class to be different in inherited classes
-     *
-     * @return ConfigurationInterface
      */
     protected function createConfigurationParser(): ConfigurationInterface
     {
@@ -144,8 +130,6 @@ class SidusDataGridExtension extends SidusBaseExtension
 
     /**
      * Allows the configuration class to be different in inherited classes
-     *
-     * @return ConfigurationInterface
      */
     protected function createFilterConfigurationParser(): ConfigurationInterface
     {

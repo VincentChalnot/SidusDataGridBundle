@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -30,29 +30,13 @@ use function is_iterable;
  */
 class DefaultColumnValueRenderer implements ColumnValueRendererInterface
 {
-    /** @var TranslatorInterface */
-    protected $translator;
-
-    /** @var PropertyAccessorInterface */
-    protected $accessor;
-
-    /**
-     * @param TranslatorInterface       $translator
-     * @param PropertyAccessorInterface $accessor
-     */
-    public function __construct(TranslatorInterface $translator, PropertyAccessorInterface $accessor)
-    {
-        $this->translator = $translator;
-        $this->accessor = $accessor;
+    public function __construct(
+        protected TranslatorInterface $translator,
+        protected PropertyAccessorInterface $accessor,
+    ) {
     }
 
-    /**
-     * @param mixed $value
-     * @param array $options
-     *
-     * @return string
-     */
-    public function renderValue($value, array $options = []): string
+    public function renderValue(mixed $value, array $options = []): string
     {
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
@@ -60,9 +44,9 @@ class DefaultColumnValueRenderer implements ColumnValueRendererInterface
 
         if ($value instanceof DateTimeInterface) {
             if (null !== $options['date_format']) {
-                return (string) $value->format($options['date_format']);
+                return $value->format($options['date_format']);
             }
-            if ($value->format('H:i') === '00:00') {
+            if ('00:00' === $value->format('H:i')) {
                 $options['time_type'] = IntlDateFormatter::NONE;
             }
             $dateFormatter = new IntlDateFormatter(
@@ -91,7 +75,6 @@ class DefaultColumnValueRenderer implements ColumnValueRendererInterface
         }
         if (is_iterable($value)) {
             $items = [];
-            /** @noinspection ForeachSourceInspection */
             foreach ($value as $key => $item) {
                 $rendered = $this->renderValue($item, $options);
                 if (!is_numeric($key)) {
@@ -104,7 +87,7 @@ class DefaultColumnValueRenderer implements ColumnValueRendererInterface
         }
         if (is_bool($value)) {
             if ($options['bool_use_translator']) {
-                return (string) $this->translator->trans(
+                return $this->translator->trans(
                     $value ? $options['bool_true'] : $options['bool_false']
                 );
             }
@@ -115,9 +98,6 @@ class DefaultColumnValueRenderer implements ColumnValueRendererInterface
         return (string) $value;
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(

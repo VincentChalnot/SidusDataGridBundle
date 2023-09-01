@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,11 +13,9 @@ declare(strict_types=1);
 namespace Sidus\DataGridBundle\Model;
 
 use LogicException;
-use Pagerfanta\Exception\InvalidArgumentException;
 use Sidus\DataGridBundle\Form\Type\LinkType;
-use Sidus\DataGridBundle\Renderer\ColumnLabelRendererInterface;
-use Sidus\DataGridBundle\Renderer\ColumnValueRendererInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,7 +23,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Traversable;
 use UnexpectedValueException;
 
 /**
@@ -33,51 +30,29 @@ use UnexpectedValueException;
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
  */
+#[AutoconfigureTag('sidus.datagrid')]
 class DataGrid
 {
-    use AttributesTrait;
+    use CommonTrait;
 
-    /** @var string */
-    protected $code;
+    protected ?QueryHandlerInterface $queryHandler = null;
 
-    /** @var QueryHandlerInterface */
-    protected $queryHandler;
-
-    /** @var string|null */
-    protected $formTheme;
-
-    /** @var string */
-    protected $template;
-
-    /** @var array */
-    protected $templateVars = [];
-
-    /** @var ColumnValueRendererInterface */
-    protected $columnValueRenderer;
-
-    /** @var ColumnLabelRendererInterface */
-    protected $columnLabelRenderer;
+    protected ?string $formTheme = null;
 
     /** @var Column[] */
-    protected $columns = [];
+    protected array $columns = [];
 
-    /** @var FormInterface */
-    protected $form;
+    protected ?FormInterface $form = null;
 
-    /** @var array */
-    protected $formOptions = [];
+    protected array $formOptions = [];
 
-    /** @var FormView */
-    protected $formView;
+    protected ?FormView $formView = null;
 
-    /** @var array */
-    protected $actions = [];
+    protected array $actions = [];
 
-    /** @var array */
-    protected $submitButton = [];
+    protected array $submitButton = [];
 
-    /** @var array */
-    protected $resetButton = [];
+    protected array $resetButton = [];
 
     public function __construct(string $code, array $configuration)
     {
@@ -94,11 +69,6 @@ class DataGrid
         foreach ($columns as $key => $columnConfiguration) {
             $this->createColumn($key, $columnConfiguration);
         }
-    }
-
-    public function getCode(): string
-    {
-        return $this->code;
     }
 
     public function getQueryHandler(): QueryHandlerInterface
@@ -121,46 +91,6 @@ class DataGrid
         $this->formTheme = $formTheme;
     }
 
-    public function getTemplate(): string
-    {
-        return $this->template;
-    }
-
-    public function setTemplate(string $template): void
-    {
-        $this->template = $template;
-    }
-
-    public function getTemplateVars(): array
-    {
-        return $this->templateVars;
-    }
-
-    public function setTemplateVars(array $templateVars): void
-    {
-        $this->templateVars = $templateVars;
-    }
-
-    public function getColumnValueRenderer(): ColumnValueRendererInterface
-    {
-        return $this->columnValueRenderer;
-    }
-
-    public function setColumnValueRenderer(ColumnValueRendererInterface $columnValueRenderer): void
-    {
-        $this->columnValueRenderer = $columnValueRenderer;
-    }
-
-    public function getColumnLabelRenderer(): ColumnLabelRendererInterface
-    {
-        return $this->columnLabelRenderer;
-    }
-
-    public function setColumnLabelRenderer(ColumnLabelRendererInterface $columnLabelRenderer): void
-    {
-        $this->columnLabelRenderer = $columnLabelRenderer;
-    }
-
     /**
      * @return Column[]
      */
@@ -176,14 +106,6 @@ class DataGrid
         } else {
             array_splice($this->columns, $index, 0, [$column]);
         }
-    }
-
-    /**
-     * @param Column[] $columns
-     */
-    public function setColumns(array $columns): void
-    {
-        $this->columns = $columns;
     }
 
     public function getActions(): array
@@ -283,10 +205,7 @@ class DataGrid
         $this->queryHandler->handleArray($data);
     }
 
-    /**
-     * @return array|Traversable
-     */
-    public function getPager()
+    public function getPager(): iterable
     {
         return $this->getQueryHandler()->getPager();
     }
@@ -340,9 +259,6 @@ class DataGrid
         }
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     */
     protected function buildResetAction(FormBuilderInterface $builder): void
     {
         $action = $builder->getOption('action');
@@ -357,9 +273,6 @@ class DataGrid
         $builder->add('filterResetButton', $type, $options);
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     */
     protected function buildSubmitAction(FormBuilderInterface $builder): void
     {
         $defaults = [
@@ -375,9 +288,6 @@ class DataGrid
         $builder->add('filterSubmitButton', $type, $options);
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     */
     protected function buildDataGridActions(FormBuilderInterface $builder): void
     {
         $actionsBuilder = $builder->create(
@@ -395,10 +305,6 @@ class DataGrid
         $builder->add($actionsBuilder);
     }
 
-    /**
-     * @param string $key
-     * @param array  $columnConfiguration
-     */
     protected function createColumn(string $key, array $columnConfiguration): void
     {
         $this->columns[] = new Column($key, $this, $columnConfiguration);

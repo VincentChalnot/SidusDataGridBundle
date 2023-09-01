@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -30,23 +30,11 @@ use Twig\TwigFunction;
  */
 class RendererExtension extends AbstractExtension
 {
-    /** @var Environment */
-    protected $twig;
-
-    /** @var UrlGeneratorInterface */
-    protected $urlGenerator;
-
-    /** @var RequestStack */
-    protected $requestStack;
-
     public function __construct(
-        Environment $twig,
-        UrlGeneratorInterface $urlGenerator,
-        RequestStack $requestStack
+        protected Environment $twig,
+        protected UrlGeneratorInterface $urlGenerator,
+        protected RequestStack $requestStack,
     ) {
-        $this->twig = $twig;
-        $this->urlGenerator = $urlGenerator;
-        $this->requestStack = $requestStack;
     }
 
     public function getFunctions(): array
@@ -86,16 +74,6 @@ class RendererExtension extends AbstractExtension
         return $this->urlGenerator->generate($request->attributes->get('_route'), $parameters);
     }
 
-    /**
-     * @param DataGrid $dataGrid
-     * @param array    $viewParameters
-     *
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     *
-     * @return string
-     */
     public function renderDataGrid(DataGrid $dataGrid, array $viewParameters = []): string
     {
         $viewParameters = array_merge($dataGrid->getTemplateVars(), $viewParameters);
@@ -106,11 +84,6 @@ class RendererExtension extends AbstractExtension
 
     /**
      * Simple function to split form widgets in as many columns as wanted
-     *
-     * @param FormView $formView
-     * @param int      $numColumns
-     *
-     * @return array
      */
     public function getFilterColumns(FormView $formView, int $numColumns = 3): array
     {

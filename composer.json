@@ -11,8 +11,7 @@
     "authors": [
         {
             "name": "Vincent Chalnot",
-            "email": "vincent@sidus.fr",
-            "homepage": "https://sidus.fr",
+            "homepage": "https://github.com/VincentChalnot",
             "role": "Developer"
         }
     ],
@@ -22,18 +21,16 @@
         }
     },
     "require": {
-        "php": ">=7.1",
-        "twig/twig": ">=2.0",
-        "symfony/dependency-injection": ">=3.0",
-        "symfony/http-kernel": ">=3.0",
-        "symfony/routing": ">=3.0",
-        "symfony/config": ">=3.0",
-        "symfony/form": ">=3.0",
-        "symfony/options-resolver": ">=3.0",
-        "symfony/property-access": ">=3.0",
-        "symfony/http-foundation": ">=3.0",
-        "symfony/translation": ">=3.0",
-        "sidus/filter-bundle": ">=3.1|dev-v3.1-dev|dev-v4.0-dev",
-        "sidus/base-bundle": "~1.0"
+        "php": ">=8.1",
+        "symfony/config": ">=6.3",
+        "symfony/dependency-injection": ">=6.3",
+        "symfony/form": ">=6.3",
+        "symfony/http-foundation": ">=6.3",
+        "symfony/options-resolver": ">=6.3",
+        "symfony/property-access": ">=6.3",
+        "symfony/routing": ">=6.3",
+        "symfony/translation": ">=6.3",
+        "twig/twig": ">=3.0",
+        "sidus/filter-bundle": ">=4.0"
     }
 }

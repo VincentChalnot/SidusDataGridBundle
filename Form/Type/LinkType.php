@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -28,26 +28,14 @@ use UnexpectedValueException;
  */
 class LinkType extends AbstractType
 {
-    /**
-     * @param FormView      $view
-     * @param FormInterface $form
-     * @param array         $options
-     */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['route'] = $options['route'];
         $view->vars['route_parameters'] = $options['route_parameters'];
         $view->vars['uri'] = $options['uri'];
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     *
-     * @throws AccessException
-     * @throws UndefinedOptionsException
-     * @throws UnexpectedValueException
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
@@ -72,10 +60,7 @@ class LinkType extends AbstractType
         );
     }
 
-    /**
-     * @return string
-     */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'sidus_link';
     }

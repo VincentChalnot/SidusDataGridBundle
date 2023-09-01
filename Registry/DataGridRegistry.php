@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/DataGridBundle package.
  *
- * Copyright (c) 2015-2021 Vincent Chalnot
+ * Copyright (c) 2015-2023 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -26,49 +26,27 @@ use UnexpectedValueException;
  */
 class DataGridRegistry
 {
-    /** @var QueryHandlerRegistry */
-    protected $queryHandlerRegistry;
-
     /** @var DataGrid[] */
-    protected $dataGrids = [];
+    protected array $dataGrids = [];
 
     /** @var array[] */
-    protected $dataGridConfigurations = [];
+    protected array $dataGridConfigurations = [];
 
-    /**
-     * @param QueryHandlerRegistry $queryHandlerRegistry
-     */
-    public function __construct(QueryHandlerRegistry $queryHandlerRegistry)
-    {
-        $this->queryHandlerRegistry = $queryHandlerRegistry;
+    public function __construct(
+        protected QueryHandlerRegistry $queryHandlerRegistry,
+    ) {
     }
 
-    /**
-     * @param string $code
-     * @param array  $configuration
-     */
-    public function addRawDataGridConfiguration(string $code, array $configuration)
+    public function addRawDataGridConfiguration(string $code, array $configuration): void
     {
         $this->dataGridConfigurations[$code] = $configuration;
     }
 
-    /**
-     * @param DataGrid $dataGrid
-     */
-    public function addDataGrid(DataGrid $dataGrid)
+    public function addDataGrid(DataGrid $dataGrid): void
     {
         $this->dataGrids[$dataGrid->getCode()] = $dataGrid;
     }
 
-    /**
-     * @param string $code
-     *
-     * @throws MissingQueryHandlerFactoryException
-     * @throws MissingQueryHandlerException
-     * @throws MissingFilterException
-     *
-     * @return DataGrid
-     */
     public function getDataGrid(string $code): DataGrid
     {
         if (!array_key_exists($code, $this->dataGrids)) {
@@ -78,25 +56,11 @@ class DataGridRegistry
         return $this->dataGrids[$code];
     }
 
-    /**
-     * @param string $code
-     *
-     * @return bool
-     */
     public function hasDataGrid(string $code): bool
     {
         return array_key_exists($code, $this->dataGrids) || array_key_exists($code, $this->dataGridConfigurations);
     }
 
-    /**
-     * @param string $code
-     *
-     * @throws MissingQueryHandlerFactoryException
-     * @throws MissingQueryHandlerException
-     * @throws MissingFilterException
-     *
-     * @return DataGrid
-     */
     protected function buildDataGrid(string $code): DataGrid
     {
         if (!array_key_exists($code, $this->dataGridConfigurations)) {

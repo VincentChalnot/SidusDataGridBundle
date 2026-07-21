@@ -86,7 +86,7 @@ class DataGrid
         return $this->formTheme;
     }
 
-    public function setFormTheme(string $formTheme = null): void
+    public function setFormTheme(?string $formTheme = null): void
     {
         $this->formTheme = $formTheme;
     }
@@ -99,7 +99,7 @@ class DataGrid
         return $this->columns;
     }
 
-    public function addColumn(Column $column, int $index = null): void
+    public function addColumn(Column $column, ?int $index = null): void
     {
         if (null === $index) {
             $this->columns[] = $column;
